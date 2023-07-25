@@ -6,6 +6,7 @@ export type Product = {
   name: string;
   imageUrl: string;
   price: string;
+  priceNumber: number;
   description: string;
   defaultPriceId: string;
 }
@@ -36,6 +37,7 @@ export function stripeProductToDomainProduct(product: Stripe.Product): Product {
     imageUrl: product.images[0],
     description: product.description,
     defaultPriceId: price.id,
+    priceNumber: price.unit_amount / 100,
     price: new Intl
       .NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' })
       .format(price.unit_amount / 100),

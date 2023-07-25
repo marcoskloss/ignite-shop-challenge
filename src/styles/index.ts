@@ -22,6 +22,10 @@ export const {
       green500: '#00875f',
       green300: '#00b37e',
     },
+
+    shadows: {
+      gray900: '#121214',
+    },
     
     fontSizes: {
       md: '1.125rem',

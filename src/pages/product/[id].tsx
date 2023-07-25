@@ -3,8 +3,9 @@ import Image from "next/image";
 import { useRouter } from "next/router";
 
 import { ImageContainer, ProductContainer, ProductDetails } from "../../styles/pages/product";
+
+import { useCart } from "../../components/Cart";
 import { Product, getProductById } from "../../core/product";
-import { buyProduct } from "../../core/sales";
 
 type Props = {
   product: Product
@@ -12,11 +13,14 @@ type Props = {
 
 export default function Product({ product }: Props) {
   const { isFallback } = useRouter()
+  const cart = useCart()
 
-  const onBuyProduct = async () => {
-    const { checkoutUrl } = await buyProduct(product)
-    window.location.href = checkoutUrl
-  }
+  const onBuyProduct = () => cart.addProduct(product)
+  
+  // const onBuyProduct = async () => {
+  //   const { checkoutUrl } = await buyProduct(product)
+  //   window.location.href = checkoutUrl
+  // }
 
   if (isFallback) {
     return <p>[LOADING]: Executando getStaticProps...</p>
