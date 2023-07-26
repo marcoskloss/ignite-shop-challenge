@@ -1,19 +1,18 @@
 import Stripe from "stripe";
 import axios from "axios";
+
 import { stripeProductToDomainProduct, type Product } from "./product";
 import { stripe } from "./stripe";
+import type { CartItem } from "./cart";
 
-export async function buyProduct(product: Product): Promise<{ checkoutUrl: string }> {
-  const response = await axios.post('/api/checkout', {
-    priceId: product.defaultPriceId
-  })
-
+export async function buyProducts(items: CartItem[]): Promise<{ checkoutUrl: string }> {
+  const response = await axios.post('/api/checkout', { items })
   return response.data
 }
 
 export type Sale = {
   customerName: string
-  product: Product
+  products: Product[]
 }
 
 export async function getSalesInfo(sessionId: string): Promise<Sale> {
@@ -22,13 +21,13 @@ export async function getSalesInfo(sessionId: string): Promise<Sale> {
   })
 
   const customerName = session.customer_details.name
-  const price = session.line_items.data[0].price
-  const product = price.product as Stripe.Product
 
-  product.default_price = price
-
-  return {
-    customerName,
-    product: stripeProductToDomainProduct(product)
-  }
+  const products = session.line_items.data.map(lineItem => {
+    const price = lineItem.price
+    const product = price.product as Stripe.Product
+    product.default_price = price
+    return stripeProductToDomainProduct(product)
+  })
+  
+  return { customerName, products }
 }

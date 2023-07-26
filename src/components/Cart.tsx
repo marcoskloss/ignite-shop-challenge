@@ -2,6 +2,7 @@ import Image from "next/image";
 import { createContext, useContext, useState } from "react";
 
 import * as CartModule from "../core/cart";
+import * as SalesModule from '../core/sales'
 import { Product } from "../core/product";
 
 import closeIcon from '../assets/close.svg'
@@ -65,6 +66,11 @@ export function CartContextProvider({children}) {
 
 export function CartDrawer() {
   const cart = useCart()
+
+  const buyItems = async () => {
+    const { checkoutUrl } = await SalesModule.buyProducts(cart.items)
+    window.location.href = checkoutUrl
+  }
   
   return (
     <S.CartDrawer open={cart.isDrawerOpen}>
@@ -104,7 +110,7 @@ export function CartDrawer() {
             <span><strong>{cart.totalCurrencyFormat()}</strong></span>
           </div>
 
-          <button>Finalizar compra</button>
+          <button onClick={buyItems}>Finalizar compra</button>
         </footer>
       </main>
     </S.CartDrawer>

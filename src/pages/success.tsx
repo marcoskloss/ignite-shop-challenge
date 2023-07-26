@@ -1,25 +1,28 @@
-import Stripe from "stripe";
 import Link from "next/link";
 import { GetServerSideProps } from "next";
 import Image from "next/image";
 
-import { ImageContainer, SuccessContainer } from "../styles/pages/success";
+import { ImagesContainer, SuccessContainer } from "../styles/pages/success";
 import { getSalesInfo, type Sale } from "../core/sales";
 
 type Props = {
-  sale: Sale
+  sales: Sale
 }
 
-export default function Success({ sale }: Props) {
+export default function Success({ sales}: Props) {
   return (
     <SuccessContainer>
       <h1>Compra efetuada!</h1>
 
-      <ImageContainer>
-        <Image src={sale.product.imageUrl} alt={sale.product.name} width={130} height={145} />
-      </ImageContainer>
+      <ImagesContainer>
+        {sales.products.map(product => (
+          <div key={product.id}>
+            <Image src={product.imageUrl} alt={product.name} width={130} height={145} />
+          </div>
+        ))}
+      </ImagesContainer>
 
-      <p>Uhuul, <strong>{sale.customerName}</strong> sua <strong>{sale.product.name}</strong> já está a caminho!</p>
+      <p>Uhuul, <strong>{sales.customerName}</strong> sua compra de {sales.products.length} camisetas já está a caminho!</p>
 
       <Link href="/">Voltar ao catálogo</Link>
     </SuccessContainer>
@@ -37,9 +40,9 @@ export const getServerSideProps: GetServerSideProps = async ({ query }) => {
   }
   
   const sessionId = String(query.session_id)
-  const sale = await getSalesInfo(sessionId)
+  const sales = await getSalesInfo(sessionId)
   
   return {
-    props: { sale }
+    props: { sales }
   }
 }
